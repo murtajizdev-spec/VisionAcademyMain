@@ -20,4 +20,3 @@ ADMIN_PASSWORD = "55420960a"
 [userenv.development]
 PORT = "8080"
 BASE_PATH = "/"
-JWT_SECRET = "32+w2GzW7NyIp6cQ2PBqfUTdsadsdas8nSWyzcdaXJZq9Wxxlo="
