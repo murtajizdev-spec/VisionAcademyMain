@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
@@ -20,8 +21,11 @@ export default function AdminSettings() {
   const { data: settings, isLoading } = useSiteSettings();
   const update = useUpdateSiteSettings();
   const { toast } = useToast();
+  const qc = useQueryClient();
   const [form, setForm] = React.useState<Record<string, string>>({});
   const [dirty, setDirty] = React.useState(false);
+  const [logoUploading, setLogoUploading] = React.useState(false);
+  const logoInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     if (settings && !dirty) {
@@ -39,6 +43,7 @@ export default function AdminSettings() {
         twitterUrl: settings.twitterUrl ?? "",
         instagramUrl: settings.instagramUrl ?? "",
         whatsappNumber: settings.whatsappNumber ?? "",
+        logoUrl: settings.logoUrl ?? "",
       });
     }
   }, [settings, dirty]);
@@ -58,6 +63,39 @@ export default function AdminSettings() {
         toast({ title: "Error", description: "Failed to save settings.", variant: "destructive" });
       },
     });
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLogoUploading(true);
+    try {
+      const token = localStorage.getItem("vp_token");
+      const fd = new FormData();
+      fd.append("logo", file);
+      const res = await fetch("/api/admin/upload-logo", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const { url } = await res.json();
+      // Save the logo URL immediately
+      const token2 = localStorage.getItem("vp_token");
+      await fetch("/api/admin/site-settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token2}` },
+        body: JSON.stringify({ logoUrl: url }),
+      });
+      setForm(f => ({ ...f, logoUrl: url }));
+      qc.invalidateQueries({ queryKey: ["site-settings"] });
+      toast({ title: "Logo updated", description: "The site logo has been changed." });
+    } catch {
+      toast({ title: "Upload failed", description: "Could not upload logo.", variant: "destructive" });
+    } finally {
+      setLogoUploading(false);
+      if (logoInputRef.current) logoInputRef.current.value = "";
+    }
   };
 
   if (isLoading) {
@@ -85,6 +123,47 @@ export default function AdminSettings() {
         {/* Identity */}
         <section className="bg-card border border-border rounded-xl p-6 space-y-5">
           <h2 className="font-display font-semibold text-lg border-b border-border pb-3">Site Identity</h2>
+
+          {/* Logo upload */}
+          <Field label="Site Logo" hint="Upload a PNG or SVG logo. Shown in the navbar and footer.">
+            <div className="flex items-center gap-4">
+              {form.logoUrl ? (
+                <img src={form.logoUrl} alt="Logo preview" className="h-12 w-auto object-contain rounded border border-border bg-muted p-1" />
+              ) : (
+                <div className="h-12 w-20 rounded border border-dashed border-border bg-muted flex items-center justify-center text-xs text-muted-foreground">No logo</div>
+              )}
+              <div className="flex flex-col gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={logoUploading}
+                  onClick={() => logoInputRef.current?.click()}
+                >
+                  {logoUploading ? "Uploading…" : "Upload Logo"}
+                </Button>
+                {form.logoUrl && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive hover:text-destructive"
+                    onClick={() => { set("logoUrl", ""); setDirty(true); }}
+                  >
+                    Remove
+                  </Button>
+                )}
+              </div>
+              <input
+                ref={logoInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleLogoUpload}
+              />
+            </div>
+          </Field>
+
           <Field label="Site Name">
             <Input value={form.siteName ?? ""} onChange={e => set("siteName", e.target.value)} placeholder="VisionPrep" />
           </Field>

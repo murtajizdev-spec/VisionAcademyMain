@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -19,6 +20,9 @@ export function Navbar() {
   const [scrolled, setScrolled] = React.useState(false);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [location] = useLocation();
+  const { data: settings } = useSiteSettings();
+  const logoSrc = settings?.logoUrl || "/logo.png";
+  const siteName = settings?.siteName ?? "VisionPrep";
 
   React.useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -49,7 +53,7 @@ export function Navbar() {
         <div className="container mx-auto px-4 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <img src="/logo.png" alt="VisionPrep" className="h-10 w-auto object-contain" />
+            <img src={logoSrc} alt={siteName} className="h-10 w-auto object-contain" />
           </Link>
 
           {/* Desktop links */}
@@ -153,7 +157,7 @@ export function Navbar() {
               {/* Drawer header */}
               <div className="flex items-center justify-between px-6 py-5 border-b border-border/50">
                 <Link href="/" className="flex items-center">
-                  <img src="/logo.png" alt="VisionPrep" className="h-8 w-auto object-contain" />
+                  <img src={logoSrc} alt={siteName} className="h-8 w-auto object-contain" />
                 </Link>
                 <button
                   onClick={() => setMenuOpen(false)}

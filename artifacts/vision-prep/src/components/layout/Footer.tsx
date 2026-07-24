@@ -59,7 +59,7 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-1 md:col-span-1">
             <Link href="/" className="inline-flex items-center gap-2 mb-4">
-              <img src="/logo.png" alt={s?.siteName ?? "VisionPrep"} className="h-9 w-auto object-contain" />
+              <img src={s?.logoUrl || "/logo.png"} alt={s?.siteName ?? "VisionPrep"} className="h-9 w-auto object-contain" />
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
               {s?.tagline}

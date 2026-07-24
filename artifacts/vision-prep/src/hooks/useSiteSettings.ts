@@ -15,6 +15,7 @@ export interface SiteSettings {
   twitterUrl: string | null;
   instagramUrl: string | null;
   whatsappNumber: string | null;
+  logoUrl: string | null;
   updatedAt: string;
 }
 
@@ -33,6 +34,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   twitterUrl: "",
   instagramUrl: "",
   whatsappNumber: "+923001234567",
+  logoUrl: "",
   updatedAt: new Date().toISOString(),
 };
 

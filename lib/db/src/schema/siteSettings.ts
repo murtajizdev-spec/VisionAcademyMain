@@ -15,5 +15,6 @@ export const siteSettingsTable = pgTable("site_settings", {
   twitterUrl: text("twitter_url").default(""),
   instagramUrl: text("instagram_url").default(""),
   whatsappNumber: text("whatsapp_number").default("+923001234567"),
+  logoUrl: text("logo_url").default(""),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
