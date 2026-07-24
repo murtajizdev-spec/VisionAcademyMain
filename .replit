@@ -16,3 +16,7 @@ channel = "stable-25_05"
 [userenv.shared]
 VITE_API_URL = ""
 ADMIN_PASSWORD = "55420960a"
+
+[userenv.development]
+PORT = "8080"
+BASE_PATH = "http://localhost:3000"
