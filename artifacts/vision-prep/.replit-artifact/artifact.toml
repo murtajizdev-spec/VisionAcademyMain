@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Vision Preparation Evening Coaching"
+version = "1.0.0"
+id = "artifacts/vision-prep"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20697
+
+[services.development]
+run = "pnpm --filter @workspace/vision-prep run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/vision-prep", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/vision-prep/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20697"
+BASE_PATH = "/"
