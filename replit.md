@@ -1,50 +1,65 @@
-# Vision Preparation Evening Coaching
+# VisionPrep — Educational Institute Website
 
-A full-stack coaching/education platform monorepo.
+A full-stack coaching institute website for MDCAT, ECAT, NUMS, FSc, Matric, and CSS/PMS preparation.
 
-## Project structure
+## Stack
+
+| Layer | Tech |
+|---|---|
+| Frontend | React 18 + Vite + Tailwind CSS + shadcn/ui + framer-motion + three.js |
+| Backend | Express 5 (TypeScript, ESM, built with esbuild) |
+| Database | PostgreSQL via Replit's built-in DB + Drizzle ORM |
+| Monorepo | pnpm workspaces |
+
+## How to Run
+
+Two workflows start automatically:
+
+- **`artifacts/vision-prep: web`** — Vite dev server (frontend). Port is set by the `PORT` env var.
+- **`artifacts/api-server: API Server`** — Express API. Always runs on port 8080.
+
+The frontend proxies `/api` → `http://localhost:8080` so they work together seamlessly.
+
+## Environment Variables (development)
+
+| Variable | Purpose |
+|---|---|
+| `PORT` | Frontend Vite dev server port |
+| `BASE_PATH` | Vite `base` config (set to `/`) |
+| `JWT_SECRET` | Signs admin JWT tokens |
+| `ADMIN_PASSWORD` | Initial admin account password |
+| `DATABASE_URL` | Auto-injected by Replit (PostgreSQL) |
+
+## Admin Panel
+
+Visit `/admin` to log in. Default credentials use the `ADMIN_PASSWORD` env var. The admin panel includes:
+
+- Courses, Faculty, Admissions, Messages, Blog, Events, Gallery, Results, Testimonials, FAQs
+- **Site Settings** — edit contact info, social links, site name, tagline, and upload the site logo
+
+## Site Settings / CMS
+
+`/admin/settings` lets you edit everything shown sitewide:
+- Site name, tagline, website URL
+- Logo (upload image — stored in `artifacts/api-server/uploads/`, served at `/api/uploads/*`)
+- Contact: address, 2 phones, 2 emails, Google Maps embed URL
+- Social links: Facebook, Instagram, Twitter/X, WhatsApp
+
+## Project Structure
 
 ```
 artifacts/
-  api-server/       — Express + TypeScript REST API (port 8080)
-  vision-prep/      — React 19 + Vite frontend (port 20697)
-  mockup-sandbox/   — UI component design sandbox
+  vision-prep/      # React frontend
+  api-server/       # Express backend
+  mockup-sandbox/   # Canvas component previews (design tool)
 lib/
-  db/               — Drizzle ORM schema + migrations (PostgreSQL)
-  api-spec/         — OpenAPI specification (openapi.yaml)
-  api-zod/          — Auto-generated Zod schemas from OpenAPI spec
-  api-client-react/ — Auto-generated React Query hooks
+  db/               # Drizzle schema + DB connection
+  api-spec/         # OpenAPI spec
+  api-client-react/ # Generated React Query hooks
+  api-zod/          # Zod validators
 ```
 
-## How to run
+## User Preferences
 
-Both services start automatically via their configured workflows:
-
-| Workflow | Command | Port |
-|---|---|---|
-| `artifacts/vision-prep: web` | `pnpm --filter @workspace/vision-prep run dev` | 20697 |
-| `artifacts/api-server: API Server` | `pnpm --filter @workspace/api-server run dev` | 8080 |
-
-The frontend Vite dev server proxies `/api` requests to `http://localhost:8080`, so there is no CORS setup needed in development.
-
-## Required secrets
-
-| Secret | Purpose |
-|---|---|
-| `JWT_SECRET` | Signs and verifies authentication JWTs |
-
-## Database
-
-Uses Replit's built-in PostgreSQL. `DATABASE_URL` is provided automatically by the runtime.
-
-To push schema changes: `pnpm --filter @workspace/db run push`
-
-## Tech stack
-
-- **Backend:** Node.js, Express 5, TypeScript, Drizzle ORM, Pino logging
-- **Frontend:** React 19, Vite, Tailwind CSS v4, Radix UI, Framer Motion, GSAP, Three.js, Wouter, TanStack Query
-- **Monorepo:** pnpm workspaces
-
-## User preferences
-
-<!-- Add user preferences here -->
+- Keep existing project structure and stack
+- Do not migrate to a different database or framework
